@@ -15,12 +15,23 @@ def main():
         )
 
         # Adding command line options
-        parser.add_argument('-i', '--input', type=str, help='Specify the input YAML data file path. (required)')
+        parser.add_argument('-i', '--input', required=True, type=str, help='Specify the input YAML data file path. (required)')
         parser.add_argument('-o', '--output', type=str, help='Specify the output image file path. (optional).')
         parser.add_argument('-f', '--format', choices=['graph', 'table'], default='graph',
-                            help='Sepcify the output format (graph, table). Defaults to graph.')
-        parser.add_argument('-s', '--size', type=str, help='Specify the size of the output image in format WIDTHxHEIGHT. (optional). Example: -s 800x600')
+                            help='Specify the output format (graph, table). Defaults to graph.')
+        parser.add_argument('-s', '--size', type=str, help='Specify the size of the output image in format WIDTH,HEIGHT. Example: -s 20,10', default='20,10')
         args = parser.parse_args()
+
+        # Additional validation
+        if args.size:
+            try:
+                width, height = map(int, args.size.split(','))
+                if width <= 0 or height <= 0:
+                    raise ValueError
+            except ValueError:
+                parser.error("Size must be in the format WIDTH,HEIGHT with positive integer values. Example: -s 20,10")
+        else:
+            width, height = 20, 10
 
         # Accessing the command line options
         input_file = args.input
